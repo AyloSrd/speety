@@ -1,45 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import './index.css'
+import useLogic from './hooks/useLogic'
 
 const App = () => {
-  const TIMER_DURATION = 3
   
-  const [text, setText] = useState('')
-  const [timeRemaining, setTimeRemaining] = useState(TIMER_DURATION)
-  const [shouldTimerStart, setShouldTimerStart] = useState(false)
-  const [count, setCount] = useState([0, 0])
-  const textAreaRef = useRef(null)
-
-  const handleChange = (e) => {
-    const { value } = e.target
-    setText(value)
-  }
-
-const startGame =() => {
-    setTimeRemaining(TIMER_DURATION)
-    setShouldTimerStart(true)
-    setText('')  
-    textAreaRef.current.disabled = false
-    textAreaRef.current.focus()
-}
-
-  useEffect(() => {
-    if (timeRemaining > 0 && shouldTimerStart) {
-      setTimeout(() => {
-        setTimeRemaining(prevTime => prevTime - 1)
-      }, 1000)
-    } else if (timeRemaining === 0) {
-      endGame()
-    }
-  }, [timeRemaining, shouldTimerStart])
-
-  const endGame = () => {
-    setShouldTimerStart(false)
-    setCount([countWords(text), countCharacters(text)])
-  }
-  const countWords = txt => txt.trim().split(/\s+/).length
-  const countCharacters = txt => txt.split('').length
-
+  const { 
+    text,
+    timeRemaining,
+    count,
+    textAreaRef,
+    shouldTimerStart,
+    handleChange,
+    handlePaste,
+    startGame
+  } = useLogic()
+  
   return(
     <>
       <h1>Speety</h1>
@@ -48,6 +23,7 @@ const startGame =() => {
         value={text} 
         disabled={!shouldTimerStart}
         ref={textAreaRef}
+        onPaste={handlePaste}
       />
       <h4>Time remaining: {timeRemaining}</h4>
       <button onClick={startGame} disabled={shouldTimerStart} >Start timer!</button>
